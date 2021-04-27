@@ -158,3 +158,61 @@ JWT_AUTH = {
     'JWT_AUTH_HEADER_PREFIX': 'JWT',
 }
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False if DEBUG else True,  # 是否禁用已经存在的日志器
+    'formatters': {  # 日志信息显示的格式
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(lineno)s %(message)s'
+            # "class": "pythonjsonlogger.jsonlogger.JsonFormatter"
+        },
+        'simple': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(funcName)s %(lineno)d %(message)s'
+            # "class": "pythonjsonlogger.jsonlogger.JsonFormatter"
+        },  # 日志记录级别+时间日期+模块名称+函数名称+行号+记录消息
+    },
+    'filters': {  # 对日志进行过滤
+        'require_debug_true': {  # django在debug模式下才输出日志
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {  # 日志处理方法
+        'console': {  # 向终端中输出日志
+            'level': 'DEBUG' if DEBUG else 'INFO',
+            'filters': ['require_debug_true'],  # debug为true才会输出
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'info': {  # 向文件中输出日志
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR+'/logs/', "info.log"),  # 日志文件的位置
+            'maxBytes': 300 * 1024 * 1024,  # 300M大小
+            'backupCount': 10,
+            'formatter': 'verbose',
+            'encoding': 'utf-8'
+        },
+        'user': {   # 专门定义一个收集特定信息的日志
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',  # 保存到文件，自动切
+            'filename': os.path.join(BASE_DIR+'/logs/', "user.log"),
+            'maxBytes': 1024 * 1024 * 50,  # 日志大小 50M
+            'backupCount': 5,
+            'formatter': 'verbose',
+            'encoding': "utf-8"
+        },
+
+    },
+    'loggers': {  # 日志器
+        "django": {        # 默认的logger应用如下配置
+            "handlers": ["info", "console"],
+            "propagate": True,
+            "level": "INFO"
+        },
+        'user_log': {      # 名为 'demo'的logger还单独处理
+            'handlers': ['user'],
+            "propagate": True,
+            'level': 'INFO',
+        },
+    }
+}

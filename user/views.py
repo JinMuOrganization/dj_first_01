@@ -6,6 +6,7 @@ from rest_framework import permissions
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
+from utils.exceptions import logger_user
 from . import models
 from .serializers import BookInfoSerializer
 from .models import BookInfo
@@ -40,7 +41,9 @@ def index(request):
     :param request: 包含了请求信息的请求对象
     :return: 响应对象
     """
+    logger_user.info("user的问题")
     return HttpResponse("hello the world!")
+
 
 
 class BookInfoViewSet(ModelViewSet):
